@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Confeitaria</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            color: #d63447;
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 16px;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 968px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .card h2 {
+            color: #d63447;
+            margin-bottom: 20px;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            color: #555;
+            font-weight: 600;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #f0f0f0;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #d63447;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #d63447 0%, #ff6b6b 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            transform: scale(1.02);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .produtos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .produto-card {
+            background: #fff;
+            border: 2px solid #f0f0f0;
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .produto-card:hover {
+            border-color: #d63447;
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(214, 52, 71, 0.2);
+        }
+
+        .produto-card.selected {
+            border-color: #d63447;
+            background: #fff5f7;
+        }
+
+        .produto-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+
+        .produto-nome {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .produto-preco {
+            color: #d63447;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .pedidos-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .pedido-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border-left: 4px solid #d63447;
+        }
+
+        .pedido-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .pedido-cliente {
+            font-weight: 600;
+            color: #333;
+            font-size: 16px;
+        }
+
+        .pedido-total {
+            color: #d63447;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .pedido-itens {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .pedido-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 13px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .btn-delete {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-complete {
+            background: #10b981;
+            color: white;
+        }
+
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .summary-card {
+            background: linear-gradient(135deg, #d63447 0%, #ff6b6b 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .summary-card h3 {
+            font-size: 14px;
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+
+        .summary-card p {
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-content h2 {
+            color: #d63447;
+            margin-bottom: 20px;
+        }
+
+        .qrcode-container {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            display: inline-block;
+        }
+
+        .close-modal {
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .pix-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            font-size: 14px;
+        }
+
+        .pix-info strong {
+            color: #d63447;
+        }
+
+        .carrinho {
+            background: #fff5f7;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+        }
+
+        .carrinho-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .carrinho-item:last-child {
+            border-bottom: none;
+        }
+
+        .carrinho-total {
+            font-weight: bold;
+            font-size: 18px;
+            color: #d63447;
+            text-align: right;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 2px solid #d63447;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧁 Sistema de Confeitaria</h1>
+            <p>Gerencie seus produtos e pedidos</p>
+        </div>
+
+        <div class="main-grid">
+            <div class="card">
+                <h2>📦 Cadastrar Produto</h2>
+                <div class="form-group">
+                    <label>Categoria</label>
+                    <select id="produtoCategoria">
+                        <option value="Bolo no Pote">🍯 Bolo no Pote</option>
+                        <option value="Cone Trufado">🍦 Cone Trufado</option>
+                        <option value="Cone de Brigadeiro">🍫 Cone de Brigadeiro</option>
+                        <option value="Bolo">🎂 Bolo</option>
+                        <option value="Torta">🥧 Torta</option>
+                        <option value="Docinhos">🍬 Docinhos</option>
+                        <option value="Sobremesas">🍮 Sobremesas</option>
+                        <option value="Outros">🍰 Outros</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Sabor/Variação</label>
+                    <input type="text" id="produtoNome" placeholder="Ex: Chocolate">
+                </div>
+                <div class="form-group">
+                    <label>Preço (R$)</label>
+                    <input type="number" id="produtoPreco" placeholder="50.00" step="0.01">
+                </div>
+                <div class="form-group">
+                    <label>Emoji do Produto</label>
+                    <input type="text" id="produtoEmoji" placeholder="🎂" maxlength="2">
+                </div>
+                <button class="btn" onclick="adicionarProduto()">➕ Adicionar Produto</button>
+
+                <div class="produtos-grid" id="produtosGrid">
+                    <div class="empty-state">Nenhum produto cadastrado</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>🛒 Criar Pedido</h2>
+                <div class="form-group">
+                    <label>Nome do Cliente</label>
+                    <input type="text" id="clienteNome" placeholder="Ex: Maria Silva">
+                </div>
+                <div class="form-group">
+                    <label>Telefone</label>
+                    <input type="tel" id="clienteTelefone" placeholder="(11) 99999-9999">
+                </div>
+                <div class="form-group">
+                    <label>Chave PIX para Pagamento</label>
+                    <input type="text" id="chavePix" placeholder="seu@email.com ou CPF/CNPJ" value="">
+                </div>
+                <div class="form-group">
+                    <label>Selecione os Produtos (clique nos produtos acima)</label>
+                </div>
+                
+                <div class="carrinho" id="carrinho">
+                    <strong>Carrinho vazio</strong>
+                </div>
+
+                <button class="btn btn-secondary" onclick="finalizarPedido()">✅ Finalizar Pedido</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>📋 Pedidos</h2>
+            <div class="pedidos-list" id="pedidosList">
+                <div class="empty-state">Nenhum pedido realizado</div>
+            </div>
+        </div>
+
+        <div class="summary-cards">
+            <div class="summary-card">
+                <h3>Total de Pedidos</h3>
+                <p id="totalPedidos">0</p>
+            </div>
+            <div class="summary-card">
+                <h3>Faturamento Total</h3>
+                <p id="faturamentoTotal">R$ 0,00</p>
+            </div>
+            <div class="summary-card">
+                <h3>Produtos Cadastrados</h3>
+                <p id="totalProdutos">0</p>
+            </div>
+        </div>
+
+        <div class="modal" id="qrcodeModal">
+            <div class="modal-content">
+                <h2>💳 Pagamento via PIX</h2>
+                <div class="pix-info">
+                    <strong>Cliente:</strong> <span id="modalCliente"></span><br>
+                    <strong>Total:</strong> <span id="modalTotal"></span>
+                </div>
+                <div class="qrcode-container" id="qrcodeContainer"></div>
+                <p style="color: #666; font-size: 14px;">Escaneie o QR Code acima para realizar o pagamento</p>
+                <button class="close-modal" onclick="fecharModal()">✓ Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+    <script>
+        let produtos = [];
+        let pedidos = [];
+        let carrinho = [];
+
+        // Renderizar ao carregar
+        window.onload = function() {
+            renderProdutos();
+            atualizarResumo();
+        };
+
+        function adicionarProduto() {
+            const categoria = document.getElementById('produtoCategoria').value;
+            const sabor = document.getElementById('produtoNome').value;
+            const preco = parseFloat(document.getElementById('produtoPreco').value);
+            const emoji = document.getElementById('produtoEmoji').value || '🍰';
+
+            if (!sabor || !preco) {
+                alert('Preencha todos os campos!');
+                return;
+            }
+
+            const produto = {
+                id: Date.now(),
+                categoria: categoria,
+                nome: sabor,
+                nomeCompleto: `${categoria} - ${sabor}`,
+                preco: preco,
+                emoji: emoji
+            };
+
+            produtos.push(produto);
+            renderProdutos();
+            limparFormProduto();
+            atualizarResumo();
+        }
+
+        function renderProdutos() {
+            const grid = document.getElementById('produtosGrid');
+            
+            if (produtos.length === 0) {
+                grid.innerHTML = '<div class="empty-state">Nenhum produto cadastrado</div>';
+                return;
+            }
+
+            grid.innerHTML = produtos.map(p => `
+                <div class="produto-card ${carrinho.find(c => c.id === p.id) ? 'selected' : ''}" onclick="toggleCarrinho(${p.id})">
+                    <div class="produto-icon">${p.emoji}</div>
+                    <div style="font-size: 11px; color: #999; margin-bottom: 5px;">${p.categoria}</div>
+                    <div class="produto-nome">${p.nome}</div>
+                    <div class="produto-preco">R$ ${p.preco.toFixed(2)}</div>
+                </div>
+            `).join('');
+        }
+
+        function toggleCarrinho(produtoId) {
+            const produto = produtos.find(p => p.id === produtoId);
+            const index = carrinho.findIndex(c => c.id === produtoId);
+
+            if (index > -1) {
+                carrinho.splice(index, 1);
+            } else {
+                carrinho.push({...produto, quantidade: 1});
+            }
+
+            renderProdutos();
+            renderCarrinho();
+        }
+
+        function renderCarrinho() {
+            const carrinhoDiv = document.getElementById('carrinho');
+            
+            if (carrinho.length === 0) {
+                carrinhoDiv.innerHTML = '<strong>Carrinho vazio</strong>';
+                return;
+            }
+
+            const total = carrinho.reduce((sum, item) => sum + item.preco, 0);
+
+            carrinhoDiv.innerHTML = `
+                ${carrinho.map(item => `
+                    <div class="carrinho-item">
+                        <span>${item.emoji} ${item.nomeCompleto}</span>
+                        <span>R$ ${item.preco.toFixed(2)}</span>
+                    </div>
+                `).join('')}
+                <div class="carrinho-total">Total: R$ ${total.toFixed(2)}</div>
+            `;
+        }
+
+        function finalizarPedido() {
+            const cliente = document.getElementById('clienteNome').value;
+            const telefone = document.getElementById('clienteTelefone').value;
+            const chavePix = document.getElementById('chavePix').value;
+
+            if (!cliente || carrinho.length === 0) {
+                alert('Preencha o nome do cliente e adicione produtos!');
+                return;
+            }
+
+            if (!chavePix) {
+                alert('Preencha sua chave PIX para gerar o QR Code!');
+                return;
+            }
+
+            const total = carrinho.reduce((sum, item) => sum + item.preco, 0);
+
+            const pedido = {
+                id: Date.now(),
+                cliente: cliente,
+                telefone: telefone,
+                itens: [...carrinho],
+                total: total,
+                data: new Date().toLocaleString('pt-BR')
+            };
+
+            pedidos.push(pedido);
+            
+            // Mostrar modal com QR Code
+            mostrarQRCode(cliente, total, chavePix);
+            
+            carrinho = [];
+            renderPedidos();
+            renderCarrinho();
+            renderProdutos();
+            limparFormPedido();
+            atualizarResumo();
+        }
+
+        function mostrarQRCode(cliente, total, chavePix) {
+            // Limpar QR Code anterior
+            document.getElementById('qrcodeContainer').innerHTML = '';
+            
+            // Atualizar informações
+            document.getElementById('modalCliente').textContent = cliente;
+            document.getElementById('modalTotal').textContent = `R$ ${total.toFixed(2)}`;
+            
+            // Gerar dados do PIX (formato simplificado)
+            const pixData = `PIX|${chavePix}|${total.toFixed(2)}|Confeitaria`;
+            
+            // Gerar QR Code
+            new QRCode(document.getElementById('qrcodeContainer'), {
+                text: pixData,
+                width: 256,
+                height: 256,
+                colorDark: "#000000",
+                colorLight: "#ffffff",
+            });
+            
+            // Mostrar modal
+            document.getElementById('qrcodeModal').classList.add('show');
+        }
+
+        function fecharModal() {
+            document.getElementById('qrcodeModal').classList.remove('show');
+        }
+
+        function renderPedidos() {
+            const lista = document.getElementById('pedidosList');
+            
+            if (pedidos.length === 0) {
+                lista.innerHTML = '<div class="empty-state">Nenhum pedido realizado</div>';
+                return;
+            }
+
+            lista.innerHTML = pedidos.map(p => `
+                <div class="pedido-item">
+                    <div class="pedido-header">
+                        <div class="pedido-cliente">${p.cliente}</div>
+                        <div class="pedido-total">R$ ${p.total.toFixed(2)}</div>
+                    </div>
+                    <div class="pedido-itens">
+                        ${p.itens.map(i => `${i.emoji} ${i.nomeCompleto}`).join(', ')}
+                    </div>
+                    <div style="color: #999; font-size: 12px; margin-bottom: 10px;">
+                        📞 ${p.telefone} | 📅 ${p.data}
+                    </div>
+                    <div class="pedido-actions">
+                        <button class="btn-small btn-complete">✓ Concluído</button>
+                        <button class="btn-small btn-delete" onclick="excluirPedido(${p.id})">🗑️ Excluir</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function excluirPedido(id) {
+            if (confirm('Deseja excluir este pedido?')) {
+                pedidos = pedidos.filter(p => p.id !== id);
+                renderPedidos();
+                atualizarResumo();
+            }
+        }
+
+        function atualizarResumo() {
+            document.getElementById('totalPedidos').textContent = pedidos.length;
+            document.getElementById('totalProdutos').textContent = produtos.length;
+            const faturamento = pedidos.reduce((sum, p) => sum + p.total, 0);
+            document.getElementById('faturamentoTotal').textContent = `R$ ${faturamento.toFixed(2)}`;
+        }
+
+        function limparFormProduto() {
+            document.getElementById('produtoCategoria').value = 'Bolo no Pote';
+            document.getElementById('produtoNome').value = '';
+            document.getElementById('produtoPreco').value = '';
+            document.getElementById('produtoEmoji').value = '';
+        }
+
+        function limparFormPedido() {
+            document.getElementById('clienteNome').value = '';
+            document.getElementById('clienteTelefone').value = '';
+            // Não limpar a chave PIX para reutilizar
+        }
+    </script>
+</body>
+</html>
